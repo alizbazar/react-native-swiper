@@ -315,7 +315,30 @@ module.exports = React.createClass({
   scrollTo(index) {
     if (this.state.isScrolling || this.state.total < 2) return
     let state = this.state
-    let diff = (this.props.loop ? 1 : 0) + index + this.state.index
+    let diff;
+    if (this.props.loop) {
+      // If shorter route to edge index is over the edge, take it
+      if (index == 0) {
+        const deltaNorm = this.state.index;
+        const deltaOver = this.state.total - this.state.index;
+        if (deltaNorm > deltaOver) {
+          diff = 1 + this.state.total;
+        }
+      } else if (index == (this.state.total - 1)) {
+        const deltaNorm = index - this.state.index;
+        const deltaOver = 1 + this.state.index;
+        if (deltaNorm > deltaOver) {
+          diff = 0;
+        }
+      }
+      // Otherwise, use normal route
+      if (!diff && diff !== 0) {
+        diff = 1 + index;
+      }
+    } else {
+      diff = index;
+    }
+
     let x = 0
     let y = 0
     if(state.dir == 'x') x = diff * state.width

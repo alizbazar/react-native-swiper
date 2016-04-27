@@ -5,11 +5,13 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    * @author leecade<leecade@163.com>
                                                                                                                                                                                                                                                                    */
 
+
 // Using bare setTimeout, setInterval, setImmediate
 // and requestAnimationFrame calls is very dangerous
 // because if you forget to cancel the request before
 // the component is unmounted, you risk the callback
 // throwing an exception.
+
 
 var _reactNative = require('react-native');
 
@@ -106,6 +108,7 @@ var styles = _reactNative.StyleSheet.create({
 module.exports = _reactNative2.default.createClass({
   displayName: 'exports',
 
+
   /**
    * Props Validation
    * @type {Object}
@@ -160,6 +163,7 @@ module.exports = _reactNative2.default.createClass({
     };
   },
 
+
   /**
    * Init states
    * @return {object} states
@@ -167,6 +171,7 @@ module.exports = _reactNative2.default.createClass({
   getInitialState: function getInitialState() {
     return this.initState(this.props);
   },
+
 
   /**
    * autoplay timer
@@ -205,6 +210,7 @@ module.exports = _reactNative2.default.createClass({
     return initState;
   },
 
+
   /**
    * Automatic rolling
    */
@@ -223,6 +229,7 @@ module.exports = _reactNative2.default.createClass({
     }, this.props.autoplayTimeout * 1000);
   },
 
+
   /**
    * Scroll begin handle
    * @param  {object} e native event
@@ -239,6 +246,7 @@ module.exports = _reactNative2.default.createClass({
       _this2.props.onScrollBeginDrag && _this2.props.onScrollBeginDrag(e, _this2.state, _this2);
     });
   },
+
 
   /**
    * Scroll end handle
@@ -272,6 +280,7 @@ module.exports = _reactNative2.default.createClass({
       _this3.props.onMomentumScrollEnd && _this3.props.onMomentumScrollEnd(e, _this3.state, _this3);
     });
   },
+
 
   /**
    * Update index after scroll
@@ -308,6 +317,7 @@ module.exports = _reactNative2.default.createClass({
     });
   },
 
+
   /**
    * Scroll by index
    * @param  {number} index offset index
@@ -315,12 +325,35 @@ module.exports = _reactNative2.default.createClass({
   scrollTo: function scrollTo(index) {
     if (this.state.isScrolling || this.state.total < 2) return;
     var state = this.state;
-    var diff = (this.props.loop ? 1 : 0) + index + this.state.index;
+    var diff = undefined;
+    if (this.props.loop) {
+      // If shorter route to edge index is over the edge, take it
+      if (index == 0) {
+        var deltaNorm = this.state.index;
+        var deltaOver = this.state.total - this.state.index;
+        if (deltaNorm > deltaOver) {
+          diff = 1 + this.state.total;
+        }
+      } else if (index == this.state.total - 1) {
+        var deltaNorm = index - this.state.index;
+        var deltaOver = 1 + this.state.index;
+        if (deltaNorm > deltaOver) {
+          diff = 0;
+        }
+      }
+      // Otherwise, use normal route
+      if (!diff && diff !== 0) {
+        diff = 1 + index;
+      }
+    } else {
+      diff = index;
+    }
+
     var x = 0;
     var y = 0;
     if (state.dir == 'x') x = diff * state.width;
     if (state.dir == 'y') y = diff * state.height;
-    this.refs.scrollView && this.refs.scrollView.scrollTo({x:x, y:y, animated:true});
+    this.refs.scrollView && this.refs.scrollView.scrollTo({ x: x, y: y, animated: true });
 
     // update scroll state
     this.setState({
@@ -328,6 +361,7 @@ module.exports = _reactNative2.default.createClass({
       autoplayEnd: false
     });
   },
+
 
   /**
    * Render pagination
@@ -486,6 +520,7 @@ module.exports = _reactNative2.default.createClass({
 
     return props;
   },
+
 
   /**
    * Default render
